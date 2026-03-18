@@ -43,7 +43,6 @@ namespace WebBanDT.Models
 
         // Navigation properties
         public virtual SanPham SanPham { get; set; }
-        public virtual ICollection<GioHang> GioHangs { get; set; }
         public virtual ICollection<ChiTietDH> ChiTietDHs { get; set; }
     }
 }

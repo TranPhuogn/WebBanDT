@@ -1,20 +1,24 @@
 -- ============================================================
 -- Oracle Database Schema for WebBanDT (Mobile Phone E-Commerce)
--- Course: Oracle DBMS | Team size: 3 | Tables: 10
+-- Course: Oracle DBMS | Team size: 3 | Tables: 9
 -- Normalization: 3NF | Supports: 1-year data tracking
 -- ============================================================
--- Tables:
+-- MASTER DATA tables (reference / lookup):
 --   1. LOAI_HANG    – Product categories  (PK, CHECK, NOT NULL)
 --   2. HANG_SX      – Brands/manufacturers (PK, UNIQUE, CHECK)
 --   3. SAN_PHAM     – Products             (PK, FK->1,2, CHECK)
 --   4. BIEN_THE_SP  – Product variants     (PK, FK->3, UNIQUE, CHECK)
 --   5. NGUOI_DUNG   – Users/customers      (PK, UNIQUE, CHECK)
 --   6. KHUYEN_MAI   – Promotions           (PK, FK->3, CHECK)
---   7. GIO_HANG     – Shopping cart        (PK, FK->5,4, UNIQUE, CHECK)
---   8. DON_HANG     – Orders               (PK, FK->5,6, CHECK)
---   9. CHI_TIET_DH  – Order line items     (PK, FK->8,4, UNIQUE, CHECK)
---  10. DANH_GIA     – Product reviews      (PK, FK->5,3,8, UNIQUE, CHECK)
--- Sample data (see sample_data.sql): 182 rows spanning Jan–Dec 2025
+-- TRANSACTION DATA tables (business events over time):
+--   7. DON_HANG     – Orders               (PK, FK->5,6, CHECK)
+--   8. CHI_TIET_DH  – Order line items     (PK, FK->7,4, UNIQUE, CHECK)
+--   9. DANH_GIA     – Product reviews      (PK, FK->5,3,7, UNIQUE, CHECK)
+-- Sample data (see sample_data.sql): 174 rows spanning Jan–Dec 2025
+-- Note: GIO_HANG (shopping cart) was intentionally excluded — it is a
+--       transient web-app session cache and adds no academic DB value.
+--       All core DB concepts (constraints, integrity, reporting) are
+--       fully covered by the 9 essential tables above.
 -- ============================================================
 
 -- ============================================================
@@ -28,14 +32,13 @@ BEGIN
         SELECT table_name FROM (
             SELECT 1 ord, 'DANH_GIA'    table_name FROM DUAL UNION ALL
             SELECT 2,     'CHI_TIET_DH' FROM DUAL UNION ALL
-            SELECT 3,     'GIO_HANG'    FROM DUAL UNION ALL
-            SELECT 4,     'DON_HANG'    FROM DUAL UNION ALL
-            SELECT 5,     'KHUYEN_MAI'  FROM DUAL UNION ALL
-            SELECT 6,     'BIEN_THE_SP' FROM DUAL UNION ALL
-            SELECT 7,     'NGUOI_DUNG'  FROM DUAL UNION ALL
-            SELECT 8,     'SAN_PHAM'    FROM DUAL UNION ALL
-            SELECT 9,     'HANG_SX'     FROM DUAL UNION ALL
-            SELECT 10,    'LOAI_HANG'   FROM DUAL
+            SELECT 3,     'DON_HANG'    FROM DUAL UNION ALL
+            SELECT 4,     'KHUYEN_MAI'  FROM DUAL UNION ALL
+            SELECT 5,     'BIEN_THE_SP' FROM DUAL UNION ALL
+            SELECT 6,     'NGUOI_DUNG'  FROM DUAL UNION ALL
+            SELECT 7,     'SAN_PHAM'    FROM DUAL UNION ALL
+            SELECT 8,     'HANG_SX'     FROM DUAL UNION ALL
+            SELECT 9,     'LOAI_HANG'   FROM DUAL
         ) ORDER BY ord
     ) LOOP
         BEGIN
@@ -52,10 +55,9 @@ BEGIN
             SELECT 4,     'SEQ_BIEN_THE'    FROM DUAL UNION ALL
             SELECT 5,     'SEQ_NGUOI_DUNG'  FROM DUAL UNION ALL
             SELECT 6,     'SEQ_KHUYEN_MAI'  FROM DUAL UNION ALL
-            SELECT 7,     'SEQ_GIO_HANG'    FROM DUAL UNION ALL
-            SELECT 8,     'SEQ_DON_HANG'    FROM DUAL UNION ALL
-            SELECT 9,     'SEQ_CHI_TIET_DH' FROM DUAL UNION ALL
-            SELECT 10,    'SEQ_DANH_GIA'    FROM DUAL
+            SELECT 7,     'SEQ_DON_HANG'    FROM DUAL UNION ALL
+            SELECT 8,     'SEQ_CHI_TIET_DH' FROM DUAL UNION ALL
+            SELECT 9,     'SEQ_DANH_GIA'    FROM DUAL
         ) ORDER BY ord
     ) LOOP
         BEGIN
@@ -75,7 +77,6 @@ CREATE SEQUENCE SEQ_SAN_PHAM    START WITH 1 INCREMENT BY 1 NOCACHE NOCYCLE;
 CREATE SEQUENCE SEQ_BIEN_THE    START WITH 1 INCREMENT BY 1 NOCACHE NOCYCLE;
 CREATE SEQUENCE SEQ_NGUOI_DUNG  START WITH 1 INCREMENT BY 1 NOCACHE NOCYCLE;
 CREATE SEQUENCE SEQ_KHUYEN_MAI  START WITH 1 INCREMENT BY 1 NOCACHE NOCYCLE;
-CREATE SEQUENCE SEQ_GIO_HANG    START WITH 1 INCREMENT BY 1 NOCACHE NOCYCLE;
 CREATE SEQUENCE SEQ_DON_HANG    START WITH 1 INCREMENT BY 1 NOCACHE NOCYCLE;
 CREATE SEQUENCE SEQ_CHI_TIET_DH START WITH 1 INCREMENT BY 1 NOCACHE NOCYCLE;
 CREATE SEQUENCE SEQ_DANH_GIA    START WITH 1 INCREMENT BY 1 NOCACHE NOCYCLE;
@@ -276,35 +277,7 @@ COMMENT ON COLUMN KHUYEN_MAI.NGAY_KET_THUC      IS 'Ngay ket thuc hieu luc khuye
 COMMENT ON COLUMN KHUYEN_MAI.TRANG_THAI         IS '1=Dang ap dung, 0=Da ket thuc';
 
 -- ============================================================
--- TABLE 7: GIO_HANG (Shopping Cart) — TRANSACTION DATA
--- Tracks items added to cart before placing an order.
--- Each row = 1 user + 1 variant. Updated when quantity changes.
--- 3NF: SO_LUONG depends only on (MA_ND, MA_BIEN_THE).
--- ============================================================
-CREATE TABLE GIO_HANG (
-    MA_GH           NUMBER(10)      NOT NULL,
-    MA_ND           NUMBER(10)      NOT NULL,
-    MA_BIEN_THE     NUMBER(10)      NOT NULL,
-    SO_LUONG        NUMBER(5)       DEFAULT 1 NOT NULL,
-    NGAY_THEM       DATE            DEFAULT SYSDATE NOT NULL,
-    NGAY_CAP_NHAT   DATE            DEFAULT SYSDATE NOT NULL,
-    CONSTRAINT PK_GIO_HANG          PRIMARY KEY (MA_GH),
-    CONSTRAINT FK_GH_NGUOI_DUNG     FOREIGN KEY (MA_ND) REFERENCES NGUOI_DUNG(MA_ND),
-    CONSTRAINT FK_GH_BIEN_THE       FOREIGN KEY (MA_BIEN_THE) REFERENCES BIEN_THE_SP(MA_BIEN_THE),
-    CONSTRAINT UQ_GIO_HANG          UNIQUE (MA_ND, MA_BIEN_THE),
-    CONSTRAINT CK_GH_SO_LUONG       CHECK (SO_LUONG > 0)
-);
-
-COMMENT ON TABLE  GIO_HANG                   IS 'Gio hang tam thoi cua nguoi dung';
-COMMENT ON COLUMN GIO_HANG.MA_GH             IS 'Ma gio hang - khoa chinh';
-COMMENT ON COLUMN GIO_HANG.MA_ND             IS 'Khoa ngoai -> NGUOI_DUNG';
-COMMENT ON COLUMN GIO_HANG.MA_BIEN_THE       IS 'Khoa ngoai -> BIEN_THE_SP';
-COMMENT ON COLUMN GIO_HANG.SO_LUONG          IS 'So luong san pham trong gio hang';
-COMMENT ON COLUMN GIO_HANG.NGAY_THEM         IS 'Ngay them san pham vao gio';
-COMMENT ON COLUMN GIO_HANG.NGAY_CAP_NHAT     IS 'Ngay chinh sua so luong lan cuoi';
-
--- ============================================================
--- TABLE 8: DON_HANG (Orders) — TRANSACTION DATA
+-- TABLE 7: DON_HANG (Orders) — TRANSACTION DATA
 -- Order header: one record per customer order.
 -- References user and optional promotion.
 -- 3NF: Delivery address/phone stored here (snapshot at order time,
@@ -355,7 +328,7 @@ COMMENT ON COLUMN DON_HANG.GHI_CHU              IS 'Ghi chu them cua khach hang'
 COMMENT ON COLUMN DON_HANG.TRANG_THAI           IS 'Trang thai don hang: CHO_XAC_NHAN | DA_XAC_NHAN | DANG_GIAO | DA_GIAO | DA_HUY';
 
 -- ============================================================
--- TABLE 9: CHI_TIET_DH (Order Items) — TRANSACTION DATA
+-- TABLE 8: CHI_TIET_DH (Order Items) — TRANSACTION DATA
 -- Order line items: each row is one variant sold in an order.
 -- DON_GIA is snapshotted at purchase time (historical accuracy).
 -- 3NF: THANH_TIEN is a derived value (SO_LUONG * DON_GIA) stored
@@ -386,7 +359,7 @@ COMMENT ON COLUMN CHI_TIET_DH.DON_GIA        IS 'Don gia tai thoi diem mua (VND)
 COMMENT ON COLUMN CHI_TIET_DH.THANH_TIEN     IS 'Thanh tien = SO_LUONG * DON_GIA (VND)';
 
 -- ============================================================
--- TABLE 10: DANH_GIA (Product Reviews & Ratings) — TRANSACTION DATA
+-- TABLE 9: DANH_GIA (Product Reviews & Ratings) — TRANSACTION DATA
 -- Customers rate and review products they have purchased.
 -- MA_DH links to the verified purchase (ensures authentic reviews).
 -- 3NF: All attributes depend only on MA_DG.
@@ -435,8 +408,7 @@ CREATE INDEX IDX_BT_SP      ON BIEN_THE_SP(MA_SP);
 CREATE INDEX IDX_KM_NGAY    ON KHUYEN_MAI(NGAY_BAT_DAU, NGAY_KET_THUC);
 CREATE INDEX IDX_KM_SP      ON KHUYEN_MAI(MA_SP);
 
--- Cart: look up cart items by user
-CREATE INDEX IDX_GH_ND      ON GIO_HANG(MA_ND);
+-- Cart: look up cart items by user — (GIO_HANG removed; index not needed)
 
 -- Orders: filter by user, date, status (reporting & statistics)
 CREATE INDEX IDX_DH_ND      ON DON_HANG(MA_ND);
@@ -506,15 +478,6 @@ CREATE OR REPLACE TRIGGER TRG_KHUYEN_MAI_BI
 BEGIN
     IF :NEW.MA_KM IS NULL THEN
         SELECT SEQ_KHUYEN_MAI.NEXTVAL INTO :NEW.MA_KM FROM DUAL;
-    END IF;
-END;
-/
-
-CREATE OR REPLACE TRIGGER TRG_GIO_HANG_BI
-    BEFORE INSERT ON GIO_HANG FOR EACH ROW
-BEGIN
-    IF :NEW.MA_GH IS NULL THEN
-        SELECT SEQ_GIO_HANG.NEXTVAL INTO :NEW.MA_GH FROM DUAL;
     END IF;
 END;
 /

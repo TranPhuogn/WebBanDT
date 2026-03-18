@@ -51,7 +51,6 @@ namespace WebBanDT.Models
         public int TrangThai { get; set; } = 1;
 
         // Navigation properties
-        public virtual ICollection<GioHang> GioHangs { get; set; }
         public virtual ICollection<DonHang> DonHangs { get; set; }
         public virtual ICollection<DanhGia> DanhGias { get; set; }
     }

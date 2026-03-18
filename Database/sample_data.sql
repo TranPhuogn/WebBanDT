@@ -1,6 +1,7 @@
 -- ============================================================
 -- Sample Data for WebBanDT Oracle Database
--- Total rows: 182  |  Date range: Jan 2025 – Dec 2025
+-- Total rows: 174  |  Date range: Jan 2025 – Dec 2025
+-- Tables: 9 (GIO_HANG excluded — see schema.sql header for rationale)
 -- Run AFTER schema.sql
 -- ============================================================
 
@@ -268,20 +269,7 @@ INSERT INTO KHUYEN_MAI (TEN_KM, MO_TA, LOAI_KM, GIA_TRI, MA_SP, GIA_TOI_THIEU, N
             'PHAN_TRAM', 10, NULL, 5000000, DATE '2025-12-01', DATE '2025-12-31');
 
 -- ============================================================
--- 7. GIO_HANG (Shopping Cart)  —  8 rows
---    Active cart items for users browsing (not yet ordered)
--- ============================================================
-INSERT INTO GIO_HANG (MA_ND, MA_BIEN_THE, SO_LUONG) VALUES (13,  1, 1);  -- Phuc: iPhone 15 Pro Max Titan Tu Nhien 256GB
-INSERT INTO GIO_HANG (MA_ND, MA_BIEN_THE, SO_LUONG) VALUES (14,  3, 1);  -- Quynh: iPhone 15 Pro Max Titan Tu Nhien 1TB
-INSERT INTO GIO_HANG (MA_ND, MA_BIEN_THE, SO_LUONG) VALUES (15, 10, 1);  -- Son: Samsung S24 Ultra Den Titan 256GB
-INSERT INTO GIO_HANG (MA_ND, MA_BIEN_THE, SO_LUONG) VALUES ( 1, 33, 1);  -- An: iPad Air M2 Xanh 256GB
-INSERT INTO GIO_HANG (MA_ND, MA_BIEN_THE, SO_LUONG) VALUES ( 2,  5, 1);  -- Binh: iPhone 15 Pro Max Titan Den 512GB
-INSERT INTO GIO_HANG (MA_ND, MA_BIEN_THE, SO_LUONG) VALUES ( 5, 24, 2);  -- Em: Samsung Tab S9 Be 256GB x2
-INSERT INTO GIO_HANG (MA_ND, MA_BIEN_THE, SO_LUONG) VALUES ( 8, 16, 1);  -- Huong: Xiaomi 14 Den 256GB
-INSERT INTO GIO_HANG (MA_ND, MA_BIEN_THE, SO_LUONG) VALUES (10, 34, 1);  -- Lan: iPad Air M2 Bac 512GB
-
--- ============================================================
--- 8. DON_HANG (Orders)  —  30 rows spanning Jan–Dec 2025
+-- 7. DON_HANG (Orders)  —  30 rows spanning Jan–Dec 2025
 --    Status: all DA_GIAO (delivered) since we are in 2026.
 --    Promotion cross-reference:
 --      KM1(Jan,10%), KM2(Feb,2M), KM3(Mar,FreeVC), KM4(Apr,15%),
@@ -572,7 +560,7 @@ INSERT INTO DON_HANG (MA_ND, MA_KM, NGAY_DAT, NGAY_GIAO_DU_KIEN, NGAY_GIAO_THUC_
             'CHUYEN_KHOAN', '789 Tran Hung Dao, Quan 5, TP.HCM', '0923456789', 'DA_GIAO');
 
 -- ============================================================
--- 9. CHI_TIET_DH (Order Items)  —  40 rows
+-- 8. CHI_TIET_DH (Order Items)  —  40 rows
 --    DON_GIA = GIA_GOC (of MA_SP) + GIA_THEM (of MA_BIEN_THE)
 -- ============================================================
 
@@ -658,7 +646,7 @@ INSERT INTO CHI_TIET_DH (MA_DH, MA_BIEN_THE, SO_LUONG, DON_GIA, THANH_TIEN) VALU
 INSERT INTO CHI_TIET_DH (MA_DH, MA_BIEN_THE, SO_LUONG, DON_GIA, THANH_TIEN) VALUES (30, 33, 1, 18990000, 18990000);
 
 -- ============================================================
--- 10. DANH_GIA (Product Reviews)  —  20 rows
+-- 9. DANH_GIA (Product Reviews)  —  20 rows
 --     Spread across Jan–Jul 2025 (5–7 days after delivery).
 --     UNIQUE constraint: (MA_ND, MA_SP, MA_DH).
 -- ============================================================
