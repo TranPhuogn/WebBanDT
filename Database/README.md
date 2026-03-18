@@ -10,21 +10,71 @@
 
 ## How to Run
 
+### Option A — Single combined script (recommended)
+
+```sql
+-- SQL*Plus
+CONNECT username/password@database
+@webbandt_full.sql
+```
+
+`webbandt_full.sql` contains the full DDL (schema) followed immediately by the DML (sample data). It is safe to re-run: the script drops all objects first then recreates everything.
+
+### Option B — Two separate scripts
+
 1. Connect to your Oracle instance as a DBA or privileged user.
 2. Create a dedicated schema/user (optional but recommended):
    ```sql
    CREATE USER webbandt_user IDENTIFIED BY your_password;
    GRANT CONNECT, RESOURCE TO webbandt_user;
    ```
-3. Run the DDL script:
+3. Run the DDL script first:
    ```
    @schema.sql
    ```
-4. Run the sample data script:
+4. Then run the sample data script:
    ```
    @sample_data.sql
    ```
 5. Update `WebBanDT/Web.config` — replace `HOST`, `SERVICE_NAME`, `YOUR_USERNAME`, `YOUR_PASSWORD` with your actual credentials.
+
+---
+
+## Sample Data — Row Counts (Jan–Dec 2025)
+
+| Table | Rows | Notes |
+|---|---:|---|
+| `LOAI_HANG` | 3 | Dien thoai, May tinh bang, Phu kien |
+| `HANG_SX` | 8 | Apple, Samsung, Xiaomi, OPPO, Vivo, Nokia, Realme, ASUS |
+| `SAN_PHAM` | 12 | iPhone 15 Pro Max / 15 / 14, Galaxy S24 Ultra / A55, Xiaomi 14, OPPO Find X7, Vivo V30, Galaxy Tab S9, Nokia G42, Realme 12 Pro+, iPad Air M2 |
+| `BIEN_THE_SP` | 34 | Color + storage combos for all 12 products |
+| `NGUOI_DUNG` | 15 | Registered Jan 2024 – Mar 2025 |
+| `KHUYEN_MAI` | 12 | One promotion per month, Jan–Dec 2025 |
+| `GIO_HANG` | 8 | Active cart items for 8 users |
+| `DON_HANG` | 30 | 2–3 orders per month, Jan–Dec 2025 |
+| `CHI_TIET_DH` | 40 | Line items for all 30 orders |
+| `DANH_GIA` | 20 | Reviews spanning Jan–Jul 2025 |
+| **TOTAL** | **182** | |
+
+### Year Coverage
+
+Orders are distributed across all 12 months of 2025:
+
+| Month | Orders |
+|---|---|
+| January | 3 |
+| February | 3 |
+| March | 3 |
+| April | 3 |
+| May | 2 |
+| June | 2 |
+| July | 2 |
+| August | 3 |
+| September | 2 |
+| October | 2 |
+| November | 3 |
+| December | 2 |
+| **Total** | **30** |
 
 ---
 

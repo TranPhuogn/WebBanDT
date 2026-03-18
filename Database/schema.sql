@@ -3,6 +3,68 @@
 -- Course: Oracle DBMS | Team size: 3 | Tables: 10
 -- Normalization: 3NF | Supports: 1-year data tracking
 -- ============================================================
+-- Tables:
+--   1. LOAI_HANG    – Product categories  (PK, CHECK, NOT NULL)
+--   2. HANG_SX      – Brands/manufacturers (PK, UNIQUE, CHECK)
+--   3. SAN_PHAM     – Products             (PK, FK->1,2, CHECK)
+--   4. BIEN_THE_SP  – Product variants     (PK, FK->3, UNIQUE, CHECK)
+--   5. NGUOI_DUNG   – Users/customers      (PK, UNIQUE, CHECK)
+--   6. KHUYEN_MAI   – Promotions           (PK, FK->3, CHECK)
+--   7. GIO_HANG     – Shopping cart        (PK, FK->5,4, UNIQUE, CHECK)
+--   8. DON_HANG     – Orders               (PK, FK->5,6, CHECK)
+--   9. CHI_TIET_DH  – Order line items     (PK, FK->8,4, UNIQUE, CHECK)
+--  10. DANH_GIA     – Product reviews      (PK, FK->5,3,8, UNIQUE, CHECK)
+-- Sample data (see sample_data.sql): 182 rows spanning Jan–Dec 2025
+-- ============================================================
+
+-- ============================================================
+-- DROP existing objects (safe to re-run on any Oracle version)
+-- Tables dropped in reverse FK dependency order.
+-- PL/SQL EXCEPTION WHEN OTHERS ignores "object does not exist".
+-- ============================================================
+BEGIN
+    -- Tables (reverse FK order: children first, then parents)
+    FOR tbl IN (
+        SELECT table_name FROM (
+            SELECT 1 ord, 'DANH_GIA'    table_name FROM DUAL UNION ALL
+            SELECT 2,     'CHI_TIET_DH' FROM DUAL UNION ALL
+            SELECT 3,     'GIO_HANG'    FROM DUAL UNION ALL
+            SELECT 4,     'DON_HANG'    FROM DUAL UNION ALL
+            SELECT 5,     'KHUYEN_MAI'  FROM DUAL UNION ALL
+            SELECT 6,     'BIEN_THE_SP' FROM DUAL UNION ALL
+            SELECT 7,     'NGUOI_DUNG'  FROM DUAL UNION ALL
+            SELECT 8,     'SAN_PHAM'    FROM DUAL UNION ALL
+            SELECT 9,     'HANG_SX'     FROM DUAL UNION ALL
+            SELECT 10,    'LOAI_HANG'   FROM DUAL
+        ) ORDER BY ord
+    ) LOOP
+        BEGIN
+            EXECUTE IMMEDIATE 'DROP TABLE ' || tbl.table_name || ' CASCADE CONSTRAINTS PURGE';
+        EXCEPTION WHEN OTHERS THEN NULL;
+        END;
+    END LOOP;
+    -- Sequences
+    FOR seq IN (
+        SELECT sequence_name FROM (
+            SELECT 1 ord, 'SEQ_LOAI_HANG'   sequence_name FROM DUAL UNION ALL
+            SELECT 2,     'SEQ_HANG_SX'     FROM DUAL UNION ALL
+            SELECT 3,     'SEQ_SAN_PHAM'    FROM DUAL UNION ALL
+            SELECT 4,     'SEQ_BIEN_THE'    FROM DUAL UNION ALL
+            SELECT 5,     'SEQ_NGUOI_DUNG'  FROM DUAL UNION ALL
+            SELECT 6,     'SEQ_KHUYEN_MAI'  FROM DUAL UNION ALL
+            SELECT 7,     'SEQ_GIO_HANG'    FROM DUAL UNION ALL
+            SELECT 8,     'SEQ_DON_HANG'    FROM DUAL UNION ALL
+            SELECT 9,     'SEQ_CHI_TIET_DH' FROM DUAL UNION ALL
+            SELECT 10,    'SEQ_DANH_GIA'    FROM DUAL
+        ) ORDER BY ord
+    ) LOOP
+        BEGIN
+            EXECUTE IMMEDIATE 'DROP SEQUENCE ' || seq.sequence_name;
+        EXCEPTION WHEN OTHERS THEN NULL;
+        END;
+    END LOOP;
+END;
+/
 
 -- ============================================================
 -- SEQUENCES (Oracle auto-increment equivalent)
