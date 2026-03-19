@@ -46,14 +46,14 @@ CONNECT username/password@database
 |---|---:|---|
 | `LOAI_HANG` | 3 | Dien thoai, May tinh bang, Phu kien |
 | `HANG_SX` | 8 | Apple, Samsung, Xiaomi, OPPO, Vivo, Nokia, Realme, ASUS |
-| `SAN_PHAM` | 12 | iPhone 15 Pro Max / 15 / 14, Galaxy S24 Ultra / A55, Xiaomi 14, OPPO Find X7, Vivo V30, Galaxy Tab S9, Nokia G42, Realme 12 Pro+, iPad Air M2 |
-| `BIEN_THE_SP` | 34 | Color + storage combos for all 12 products |
+| `SAN_PHAM` | 13 | iPhone 15 Pro Max / 15 / 14, Galaxy S24 Ultra / A55, Xiaomi 14, OPPO Find X7, Vivo V30, Galaxy Tab S9, Nokia G42, Realme 12 Pro+, iPad Air M2, ASUS ROG Phone 8 |
+| `BIEN_THE_SP` | 36 | Color + storage combos for all 13 products |
 | `NGUOI_DUNG` | 15 | Registered Jan 2024 – Mar 2025 |
 | `KHUYEN_MAI` | 12 | One promotion per month, Jan–Dec 2025 |
-| `DON_HANG` | 30 | 2–3 orders per month, Jan–Dec 2025 |
-| `CHI_TIET_DH` | 40 | Line items for all 30 orders |
-| `DANH_GIA` | 20 | Reviews spanning Jan–Jul 2025 |
-| **TOTAL** | **174** | |
+| `DON_HANG` | 31 | 2–3 orders per month, Jan–Dec 2025 |
+| `CHI_TIET_DH` | 41 | Line items for all 31 orders |
+| `DANH_GIA` | 21 | Reviews spanning Jan–Jul 2025 |
+| **TOTAL** | **180** | |
 
 > **Note:** `GIO_HANG` (shopping cart) was intentionally excluded from the schema.
 > See the [Academic Analysis](#academic-analysis--why-9-tables) section below for full justification.
@@ -68,7 +68,7 @@ Orders are distributed across all 12 months of 2025:
 | February | 3 |
 | March | 3 |
 | April | 3 |
-| May | 2 |
+| May | 3 |
 | June | 2 |
 | July | 2 |
 | August | 3 |
@@ -76,7 +76,7 @@ Orders are distributed across all 12 months of 2025:
 | October | 2 |
 | November | 3 |
 | December | 2 |
-| **Total** | **30** |
+| **Total** | **31** |
 
 ---
 

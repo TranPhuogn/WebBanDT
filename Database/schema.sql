@@ -14,7 +14,7 @@
 --   7. DON_HANG     – Orders               (PK, FK->5,6, CHECK)
 --   8. CHI_TIET_DH  – Order line items     (PK, FK->7,4, UNIQUE, CHECK)
 --   9. DANH_GIA     – Product reviews      (PK, FK->5,3,7, UNIQUE, CHECK)
--- Sample data (see sample_data.sql): 174 rows spanning Jan–Dec 2025
+-- Sample data (see sample_data.sql): 180 rows spanning Jan–Dec 2025
 -- Note: GIO_HANG (shopping cart) was intentionally excluded — it is a
 --       transient web-app session cache and adds no academic DB value.
 --       All core DB concepts (constraints, integrity, reporting) are

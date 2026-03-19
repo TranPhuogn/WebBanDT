@@ -7,39 +7,10 @@
 --   2. CREATE sequences, tables, constraints, indexes
 --   3. CREATE triggers for auto-increment PKs
 --   4. CREATE views for reporting
---   5. INSERT sample data (174 rows, Jan–Dec 2025)
+--   5. INSERT sample data (180 rows, Jan–Dec 2025)
 --   6. COMMIT
 -- ============================================================
--- Usage (SQL*Plus):
---   CONNECT username/password@database
---   @webbandt_full.sql
---
--- Usage (SQL Developer):
---   File > Open > webbandt_full.sql > Run Script (F5)
--- ============================================================
 
--- ============================================================
--- Oracle Database Schema for WebBanDT (Mobile Phone E-Commerce)
--- Course: Oracle DBMS | Team size: 3 | Tables: 9
--- Normalization: 3NF | Supports: 1-year data tracking
--- ============================================================
--- MASTER DATA tables (reference / lookup):
---   1. LOAI_HANG    – Product categories  (PK, CHECK, NOT NULL)
---   2. HANG_SX      – Brands/manufacturers (PK, UNIQUE, CHECK)
---   3. SAN_PHAM     – Products             (PK, FK->1,2, CHECK)
---   4. BIEN_THE_SP  – Product variants     (PK, FK->3, UNIQUE, CHECK)
---   5. NGUOI_DUNG   – Users/customers      (PK, UNIQUE, CHECK)
---   6. KHUYEN_MAI   – Promotions           (PK, FK->3, CHECK)
--- TRANSACTION DATA tables (business events over time):
---   7. DON_HANG     – Orders               (PK, FK->5,6, CHECK)
---   8. CHI_TIET_DH  – Order line items     (PK, FK->7,4, UNIQUE, CHECK)
---   9. DANH_GIA     – Product reviews      (PK, FK->5,3,7, UNIQUE, CHECK)
--- Sample data (see sample_data.sql): 174 rows spanning Jan–Dec 2025
--- Note: GIO_HANG (shopping cart) was intentionally excluded — it is a
---       transient web-app session cache and adds no academic DB value.
---       All core DB concepts (constraints, integrity, reporting) are
---       fully covered by the 9 essential tables above.
--- ============================================================
 
 -- ============================================================
 -- DROP existing objects (safe to re-run on any Oracle version)
@@ -626,12 +597,8 @@ JOIN CHI_TIET_DH    ct ON dh.MA_DH        = ct.MA_DH
 JOIN BIEN_THE_SP    bt ON ct.MA_BIEN_THE  = bt.MA_BIEN_THE
 JOIN SAN_PHAM       sp ON bt.MA_SP        = sp.MA_SP;
 
--- ============================================================
--- Sample Data for WebBanDT Oracle Database
--- Total rows: 174  |  Date range: Jan 2025 – Dec 2025
--- Tables: 9 (GIO_HANG excluded — see schema.sql header for rationale)
--- Run AFTER schema.sql
--- ============================================================
+COMMIT;
+
 
 -- ============================================================
 -- 1. LOAI_HANG (Product Categories)  —  3 rows
@@ -656,7 +623,7 @@ INSERT INTO HANG_SX (TEN_HANG, NUOC_GC) VALUES ('Realme',  'Trung Quoc');
 INSERT INTO HANG_SX (TEN_HANG, NUOC_GC) VALUES ('ASUS',    'Dai Loan');
 
 -- ============================================================
--- 3. SAN_PHAM (Products)  —  12 rows
+-- 3. SAN_PHAM (Products)  —  13 rows
 --    MA_LOAI: 1=Dien thoai  2=May tinh bang  3=Phu kien
 --    MA_HANG: 1=Apple  2=Samsung  3=Xiaomi  4=OPPO  5=Vivo
 --             6=Nokia  7=Realme   8=ASUS
@@ -721,8 +688,13 @@ INSERT INTO SAN_PHAM (TEN_SP, MA_LOAI, MA_HANG, GIA_GOC, THONG_SO_KT, MO_TA)
             'RAM: 8GB | Chip: M2 | Pin: 28.65Wh | Man hinh: 11" Liquid Retina | Camera: 12MP',
             'iPad Air M2 voi chip M2 manh me, man hinh Liquid Retina, ho tro Apple Pencil Pro.');
 
+INSERT INTO SAN_PHAM (TEN_SP, MA_LOAI, MA_HANG, GIA_GOC, THONG_SO_KT, MO_TA)
+    VALUES ('ASUS ROG Phone 8', 1, 8, 21990000,
+            'RAM: 16GB | Chip: Snapdragon 8 Gen 3 | Pin: 5500mAh | Man hinh: 6.78" AMOLED 165Hz | Camera: 50MP+13MP+32MP',
+            'ASUS ROG Phone 8 danh cho game thu chuyen nghiep, man hinh 165Hz, loa kep, tan nhiet AeroActive Cooler, sac nhanh 65W.');
+
 -- ============================================================
--- 4. BIEN_THE_SP (Product Variants)  —  34 rows
+-- 4. BIEN_THE_SP (Product Variants)  —  36 rows
 --    IDs follow insertion order (SEQ_BIEN_THE auto-increments).
 --    SP 1 (iPhone 15 Pro Max)  : BT  1- 5
 --    SP 2 (iPhone 15)          : BT  6- 9
@@ -736,6 +708,7 @@ INSERT INTO SAN_PHAM (TEN_SP, MA_LOAI, MA_HANG, GIA_GOC, THONG_SO_KT, MO_TA)
 --    SP10 (Nokia G42)          : BT 28-29
 --    SP11 (Realme 12 Pro+)     : BT 30-31
 --    SP12 (iPad Air M2)        : BT 32-34
+--    SP13 (ASUS ROG Phone 8)   : BT 35-36
 -- ============================================================
 
 -- SP 1 — iPhone 15 Pro Max
@@ -795,6 +768,10 @@ INSERT INTO BIEN_THE_SP (MA_SP, MAU_SAC, DUNG_LUONG, GIA_THEM, SO_LUONG_TON) VAL
 INSERT INTO BIEN_THE_SP (MA_SP, MAU_SAC, DUNG_LUONG, GIA_THEM, SO_LUONG_TON) VALUES (12, 'Bac',  '256GB',       0, 8);
 INSERT INTO BIEN_THE_SP (MA_SP, MAU_SAC, DUNG_LUONG, GIA_THEM, SO_LUONG_TON) VALUES (12, 'Xanh', '256GB',       0, 6);
 INSERT INTO BIEN_THE_SP (MA_SP, MAU_SAC, DUNG_LUONG, GIA_THEM, SO_LUONG_TON) VALUES (12, 'Bac',  '512GB', 3000000, 5);
+
+-- SP13 — ASUS ROG Phone 8
+INSERT INTO BIEN_THE_SP (MA_SP, MAU_SAC, DUNG_LUONG, GIA_THEM, SO_LUONG_TON) VALUES (13, 'Den Bong', '256GB',       0, 10);
+INSERT INTO BIEN_THE_SP (MA_SP, MAU_SAC, DUNG_LUONG, GIA_THEM, SO_LUONG_TON) VALUES (13, 'Den Bong', '512GB', 2000000,  6);
 
 -- ============================================================
 -- 5. NGUOI_DUNG (Users)  —  15 rows
@@ -897,7 +874,7 @@ INSERT INTO KHUYEN_MAI (TEN_KM, MO_TA, LOAI_KM, GIA_TRI, MA_SP, GIA_TOI_THIEU, N
             'PHAN_TRAM', 10, NULL, 5000000, DATE '2025-12-01', DATE '2025-12-31');
 
 -- ============================================================
--- 7. DON_HANG (Orders)  —  30 rows spanning Jan–Dec 2025
+-- 7. DON_HANG (Orders)  —  31 rows spanning Jan–Dec 2025
 --    Status: all DA_GIAO (delivered) since we are in 2026.
 --    Promotion cross-reference:
 --      KM1(Jan,10%), KM2(Feb,2M), KM3(Mar,FreeVC), KM4(Apr,15%),
@@ -1035,6 +1012,15 @@ INSERT INTO DON_HANG (MA_ND, MA_KM, NGAY_DAT, NGAY_GIAO_DU_KIEN, NGAY_GIAO_THUC_
             DATE '2025-05-20', DATE '2025-05-23', DATE '2025-05-22',
             14480000, 0, 30000, 14510000,
             'TIEN_MAT', '555 Bach Dang, Son Tra, Da Nang', '0901234568', 'DA_GIAO');
+
+-- Order 31: ND=14  KM=5  ASUS ROG Phone 8 Den 256GB (BT=35)  21990000 -1M=20990000
+INSERT INTO DON_HANG (MA_ND, MA_KM, NGAY_DAT, NGAY_GIAO_DU_KIEN, NGAY_GIAO_THUC_TE,
+                      TONG_TIEN_HANG, TIEN_GIAM, PHI_VAN_CHUYEN, TONG_THANH_TOAN,
+                      PHUONG_THUC_TT, DIA_CHI_GIAO, SO_DT_LIEN_HE, TRANG_THAI)
+    VALUES (14, 5,
+            DATE '2025-05-25', DATE '2025-05-28', DATE '2025-05-27',
+            21990000, 1000000, 0, 20990000,
+            'VNPAY', '888 Hoang Dieu, Quan 4, TP.HCM', '0934567891', 'DA_GIAO');
 
 -- === JUNE 2025 ===
 -- Order 15: ND=12  KM=6  iPhone 15 Pro Max Titan Den 256GB (BT=4)  33990000 -8%=2719200 => 31270800
@@ -1188,7 +1174,7 @@ INSERT INTO DON_HANG (MA_ND, MA_KM, NGAY_DAT, NGAY_GIAO_DU_KIEN, NGAY_GIAO_THUC_
             'CHUYEN_KHOAN', '789 Tran Hung Dao, Quan 5, TP.HCM', '0923456789', 'DA_GIAO');
 
 -- ============================================================
--- 8. CHI_TIET_DH (Order Items)  —  40 rows
+-- 8. CHI_TIET_DH (Order Items)  —  41 rows
 --    DON_GIA = GIA_GOC (of MA_SP) + GIA_THEM (of MA_BIEN_THE)
 -- ============================================================
 
@@ -1272,9 +1258,11 @@ INSERT INTO CHI_TIET_DH (MA_DH, MA_BIEN_THE, SO_LUONG, DON_GIA, THANH_TIEN) VALU
 INSERT INTO CHI_TIET_DH (MA_DH, MA_BIEN_THE, SO_LUONG, DON_GIA, THANH_TIEN) VALUES (30, 24, 1, 22990000, 22990000);
 -- DH=30 : BT=33 SP=12 iPad Air M2 Xanh 256GB  18990000+0
 INSERT INTO CHI_TIET_DH (MA_DH, MA_BIEN_THE, SO_LUONG, DON_GIA, THANH_TIEN) VALUES (30, 33, 1, 18990000, 18990000);
+-- DH=31 : BT=35 SP=13 ASUS ROG Phone 8 Den 256GB  21990000+0
+INSERT INTO CHI_TIET_DH (MA_DH, MA_BIEN_THE, SO_LUONG, DON_GIA, THANH_TIEN) VALUES (31, 35, 1, 21990000, 21990000);
 
 -- ============================================================
--- 9. DANH_GIA (Product Reviews)  —  20 rows
+-- 9. DANH_GIA (Product Reviews)  —  21 rows
 --     Spread across Jan–Jul 2025 (5–7 days after delivery).
 --     UNIQUE constraint: (MA_ND, MA_SP, MA_DH).
 -- ============================================================
@@ -1338,5 +1326,8 @@ INSERT INTO DANH_GIA (MA_ND, MA_SP, MA_DH, SO_SAO, BINH_LUAN, NGAY_DANH_GIA)
 -- R20: ND=13 SP=7  DH=18 (Vivo V30)
 INSERT INTO DANH_GIA (MA_ND, MA_SP, MA_DH, SO_SAO, BINH_LUAN, NGAY_DANH_GIA)
     VALUES (13, 7, 18, 4, 'Vivo V30 mong nhe, man hinh dep, selfie AI chup sang dep. Kem Xiaomi rat xung.', DATE '2025-07-25');
+-- R21: ND=14 SP=13 DH=31 (ASUS ROG Phone 8)
+INSERT INTO DANH_GIA (MA_ND, MA_SP, MA_DH, SO_SAO, BINH_LUAN, NGAY_DANH_GIA)
+    VALUES (14, 13, 31, 5, 'ASUS ROG Phone 8 man hinh 165Hz met mat, chip Snapdragon 8 Gen 3 khong lay dong. Dien thoai gaming dinh nhat toi tung dung!', DATE '2025-06-01');
 
 COMMIT;
